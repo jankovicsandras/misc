@@ -64,6 +64,7 @@ When these files are served from a server (not just opened as local files), they
 ### Concentric Moiré patterns
 
 Animated SVG eyecandy.
+
 ![Screenshot](https://github.com/jankovicsandras/misc/blob/master/concentric_moire_patterns.png)
 
 [Wikipedia article on Moiré patterns](https://en.wikipedia.org/wiki/Moire_patterns)
@@ -71,6 +72,7 @@ Animated SVG eyecandy.
 ### Image to slashes
 
 Simple "ASCII art" generator.
+
 ![Screenshot](https://github.com/jankovicsandras/misc/blob/master/image_to_slashes.png)
 
 ### Sierpinski carpet L-system
@@ -82,6 +84,7 @@ The following 677 bytes will render a [Sierpinski carpet](https://en.wikipedia.o
 ```
 
 ![Screenshot](https://github.com/jankovicsandras/misc/blob/master/sierpinski_carpet_l-system.png)
+
 There's a somewhat commented version as well.
 
 
