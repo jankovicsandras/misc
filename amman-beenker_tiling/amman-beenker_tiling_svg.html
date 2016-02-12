@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta charset="utf-8" />
+	<title>Ammann–Beenker tiling</title>
+	<script>
+/*	
+	https://en.wikipedia.org/wiki/Ammann-Beenker_tiling
+	
+	To simplify calculations, rotations are avoided, only mirroring (flipping) is used. 
+	To achieve this, shape C is created, which is a rotated version of shape B.
+	outline: tile outline coordinates; 
+	children: child shapes with type, starting coordinates and transformed vectors vx and vy;
+	graph: the path to create the original pattern visually
+	
+	drawshape(type,cx,cy,vx,vy,iter,mode) calls itself recursively.
+	type is the (starting) tile type; cx,cy are starting coordinates; vx vy are unit vectors; iter is the (remaining) iterations;
+	mode is drawing mode, mode===1 draws the original pattern, other values (mode===2) draws the tiles
+	
+	createSVGString() and appendSVGString() are small helper functions to create and append the SVG string.
+	
+*/	
+		var c1 = Math.sqrt(2)-1, c2 = (1+c1)/(3+c1);
+		
+		var shapes = {
+			'A':{
+				'outline':[{'x':0,'y':0},{'x':2+c1,'y':0},{'x':2+c1,'y':1},{'x':3+c1,'y':1},{'x':3+c1,'y':3+c1},{'x':1,'y':3+c1},{'x':1,'y':2+c1},{'x':0,'y':2+c1}],
+				'children':[
+				            {'type':'A','x':0,'y':0,'vx':c2,'vy':c2},
+				            {'type':'A','x':2+c1,'y':1,'vx':-c2,'vy':c2},
+				            {'type':'A','x':2,'y':2,'vx':c2,'vy':c2},
+				            {'type':'B','x':0,'y':1,'vx':c2,'vy':c2},
+				            {'type':'B','x':3+c1,'y':2+c1,'vx':-c2,'vy':-c2},
+				            {'type':'C','x':1,'y':2+c1,'vx':c2,'vy':c2},
+				            {'type':'C','x':2+c1,'y':1,'vx':-c2,'vy':-c2}
+				            ],
+				'graph':[{'x':0,'y':0},{'x':2+c1,'y':1},{'x':3+c1,'y':3+c1},{'x':1,'y':2+c1}],
+				'graph2':[{'x':0,'y':0},{'x':2+c1,'y':1},{'x':3+c1,'y':3+c1},{'x':1,'y':2+c1},{'x':0,'y':0}],
+				'tilecolor':'rgb(192,192,192)','graphcolor':'rgb(192,192,192)',
+				'tilecolor2':'rgb(64,32,32)','graphcolor2':'rgb(128,0,0)'
+			},
+			'B':{
+				'outline':[{'x':0,'y':0},{'x':1,'y':0},{'x':1,'y':1},{'x':2+c1,'y':1},{'x':2+c1,'y':3+c1},{'x':0,'y':3+c1}],
+				'children':[
+				            {'type':'A','x':1+c1,'y':1,'vx':-c2,'vy':c2},
+				            {'type':'A','x':1,'y':2,'vx':c2,'vy':c2},
+				            {'type':'B','x':0,'y':1+c1,'vx':c2,'vy':-c2},
+				            {'type':'B','x':2+c1,'y':2+c1,'vx':-c2,'vy':-c2},
+				            {'type':'C','x':0,'y':2+c1,'vx':c2,'vy':c2}
+				            ],
+				'graph':[{'x':1,'y':0},{'x':0,'y':2+c1},{'x':2+c1,'y':3+c1},{'x':3+c1,'y':1}],
+				'graph2':[{'x':1,'y':0},{'x':0,'y':2+c1},{'x':2+c1,'y':3+c1}],
+				'tilecolor':'rgb(192,192,192)','graphcolor':'rgb(0,128,192)',
+				'tilecolor2':'rgb(32,64,32)','graphcolor2':'rgb(0,128,0)'
+			},
+			'C':{
+				'outline':[{'x':0,'y':0},{'x':2+c1,'y':0},{'x':2+c1,'y':1+c1},{'x':3+c1,'y':1+c1},{'x':3+c1,'y':2+c1},{'x':0,'y':2+c1}],
+				'children':[
+				            {'type':'A','x':0,'y':0,'vx':c2,'vy':c2},
+				            {'type':'A','x':2+c1,'y':1,'vx':-c2,'vy':c2},
+				            {'type':'B','x':0,'y':1,'vx':c2,'vy':c2},
+				            {'type':'C','x':2+c1,'y':1,'vx':-c2,'vy':-c2},
+				            {'type':'C','x':3+c1,'y':1+c1,'vx':-c2,'vy':c2}
+				            ],
+				'graph':[{'x':0,'y':0},{'x':1,'y':2+c1},{'x':3+c1,'y':1+c1},{'x':2+c1,'y':-1}],
+				'graph2':[{'x':0,'y':0},{'x':1,'y':2+c1},{'x':3+c1,'y':1+c1}],
+				'tilecolor':'rgb(192,192,192)','graphcolor':'rgb(0,128,192)',
+				'tilecolor2':'rgb(32,32,64)','graphcolor2':'rgb(0,0,128)'
+			}
+		};
+		
+		
+		function drawshape(type,cx,cy,vx,vy,iter,mode){
+			var str = '';
+			if(iter===0){
+				// Tile
+				// Start path element
+				console.log(mode);
+				if(mode===1){
+					str += '<path fill="'+shapes[type].tilecolor+'" stroke="'+shapes[type].tilecolor+'" stroke-width="1" d="';
+				}else{
+					str += '<path fill="'+shapes[type].tilecolor2+'" stroke="rgb(0,0,0)" stroke-width="1" d="';
+				}
+				// Create path.d
+				str += 'M'+ (cx + shapes[type].outline[0].x * vx) +' '+ (cy + shapes[type].outline[0].y * vy)+' ';
+				for(var i=1;i<shapes[type].outline.length;i++){
+					str += 'L'+ (cx + shapes[type].outline[i].x * vx) +' '+ (cy + shapes[type].outline[i].y * vy) +' ';
+				}
+				// Close path and end path element
+				str += 'Z " />';
+				
+				// Graph
+				// Start path element
+				var thisgraph;
+				if(mode===1){
+					str += '<path fill="'+shapes[type].graphcolor+'" stroke="rgb(0,0,0)" stroke-width="1" d="';
+					thisgraph = shapes[type].graph;
+				}else{
+					str += '<path fill="transparent" stroke="'+shapes[type].graphcolor2+'" stroke-width="1" d="';
+					thisgraph = shapes[type].graph2;
+				}
+				// Create path.d
+				str += 'M'+  (cx + thisgraph[0].x * vx) +' '+ (cy + thisgraph[0].y * vy) +' ';
+				for(var i=1;i<thisgraph.length;i++){
+					str += 'L'+ (cx + thisgraph[i].x * vx) +' '+ (cy + thisgraph[i].y * vy) +' ';
+				}
+				// Close path and end path element
+				if(mode===1){ str += 'Z " />'; }else{ str += ' " />'; }
+				
+			}else{
+				for(var i=0;i<shapes[type].children.length;i++){
+					str += drawshape( 
+						shapes[type].children[i].type, 
+						cx + shapes[type].children[i].x * vx,
+						cy + shapes[type].children[i].y * vy,
+						vx * shapes[type].children[i].vx,
+						vy * shapes[type].children[i].vy,
+						iter-1,
+						mode
+					);
+				}
+			}
+			return str;
+		}// End of drawshape()
+		
+		function createSVGString(w,h,type,cx,cy,vx,vy,iter,mode){
+			var svgstr = '<svg width="'+w+'px" height="'+h+'px" version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Amman-Beenker tiling" style="background-color:rgb(0,0,0)">';
+			svgstr += drawshape(type,cx,cy,vx,vy,iter,mode);
+			svgstr += '</svg>';
+			return svgstr;
+		}
+		
+		function appendSVGString(svgstr,parentid){
+			var div;
+			if(parentid){
+				div = document.getElementById(parentid);
+				if(!div){
+					div = document.createElement('div');
+					div.id = parentid;
+					document.body.appendChild(div);
+				}
+			}else{
+				div = document.createElement('div');
+				document.body.appendChild(div);
+			}
+			div.innerHTML += svgstr;
+		}
+		
+		// Drawing the usual and the alternate tileset
+		function onload_init(){
+			appendSVGString(createSVGString(700,700,'A',10,10,200,200,5,1));
+			appendSVGString(createSVGString(700,700,'A',10,10,200,200,3,2));
+		}
+		
+	</script>
+	</head>
+	<body id='mainbody' onload='onload_init()' style="background-color:rgb(64,64,64)" >
+	<noscript>Please enable JavaScript!</noscript>
+	</body>
+</html>

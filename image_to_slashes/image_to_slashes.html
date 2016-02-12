@@ -1,0 +1,69 @@
+<!-- Image to slashes -->
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Image to slashes</title>
+	<style>body{ font-family:Courier New, monospace; font-size: 8px; line-height: 6px; }</style>
+		<script>
+		
+			var incanvas,incontext,inimg;
+			
+			function onload_init(){
+				
+				inimg = new Image();
+				inimg.src = 'test.png';
+				
+				inimg.onload = function() {
+					incanvas = document.createElement('canvas');
+					incanvas.setAttribute('id','incanvas');
+					incanvas.width=inimg.width;
+					incanvas.height=inimg.height;
+					document.body.appendChild(incanvas);
+					incontext = incanvas.getContext('2d');
+					incontext.drawImage(inimg,0,0);
+					
+					// Create line art
+					var str = '';
+					var ar = getarrayfromcanvas(incanvas);
+					var sum = 0;
+					for(var ycnt=0;ycnt<incanvas.height;ycnt++){
+						for(var xcnt=0;xcnt<incanvas.width;xcnt++){
+						
+							sum = ar[xcnt][ycnt][0]+ar[xcnt][ycnt][1]+ar[xcnt][ycnt][2];
+							if(sum>32){str+='\\';}else{str+='/';}	
+						}
+						str+='<br/>';
+					}
+					
+					document.body.innerHTML=str;
+					
+				}// End of inimg.onload()
+				
+			}// End of onload_init()
+	
+		
+			function getarrayfromcanvas(canvas){
+				context = canvas.getContext('2d');
+				var imgd = context.getImageData(0,0,canvas.width,canvas.height);
+				var arr = [];
+				var idx;
+				for(var xcnt=0;xcnt<canvas.width;xcnt++){
+					arr[xcnt]=[];
+					for(var ycnt=0;ycnt<canvas.height;ycnt++){
+						arr[xcnt][ycnt]=[];
+						for(var ccnt=0;ccnt<4;ccnt++){
+							idx=(ycnt * canvas.width + xcnt) * 4 + ccnt;
+							arr[xcnt][ycnt][ccnt]=imgd.data[idx];
+						}	
+					}	
+				}
+				return arr;
+			}// End of getarrayfromcanvas()
+		
+		</script>
+	</head>
+	<body id='mainbody' onload='onload_init();'>
+	<noscript>Please enable JavaScript!</noscript>
+	
+	</body>
+</html>

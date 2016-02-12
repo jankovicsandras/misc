@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Concentric Moiré patterns</title>
+		<script>
+		
+			// https://en.wikipedia.org/wiki/Moire_patterns
+		
+			var maxx = 200, maxy = 200, mysvg, framecnt=0, time;
+			var NS='http://www.w3.org/2000/svg';
+			
+			function animate(){
+				time = Date.now();
+				movecirclegroup('g1',maxx/2+Math.sin(time/1000)*maxx/2,maxy/2+Math.cos(time/2000)*maxy/2);
+				movecirclegroup('g2',maxx/2+Math.sin(time/1500)*maxx/2,maxy/2+Math.cos(time/1800)*maxy/2);
+				movecirclegroup('g3',maxx/2+Math.sin(time/1800)*maxx/2,maxy/2+Math.cos(time/2100)*maxy/2);
+				//movecirclegroup('g4',maxx/2+Math.sin(time/2100)*maxx/2,maxy/2+Math.cos(time/1500)*maxy/2);
+				framecnt++;
+				setTimeout('animate()',50);
+			}
+			
+			function onload_init(){
+				createsvg();
+				createcirclegroup('g1',maxx/5,maxy/2,0.75,1,'rgb(0,0,0)');
+				createcirclegroup('g2',maxx-maxx/5,maxy/2,0.75,1,'rgb(0,0,0)');
+				createcirclegroup('g3',maxx/2,maxy-maxy/5,1,1,'rgb(0,0,0)');
+				//createcirclegroup('g4',maxx/5,maxy/2,1,1,'rgb(0,0,0)');
+				animate();
+			}
+			
+			function createsvg(){
+				
+				mysvg = document.getElementById('mysvg');
+				
+				if((mysvg===null)||(mysvg===undefined)){
+					
+					mysvg = document.createElementNS(NS,'svg');
+					mysvg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+					mysvg.setAttribute('width', maxx); 
+					mysvg.setAttribute('height', maxy); 
+					mysvg.setAttribute('viewBox', '0 0 '+maxx+' '+maxy+' '); 
+					mysvg.setAttribute('id', 'mysvg'); 
+					mysvg.setAttribute('style', 'background: rgb(200,200,200)');
+				}
+				
+				document.body.appendChild(mysvg);
+		 	}	 
+		
+			function createcirclegroup(id,x,y,strokewidth,strokewidthmultiplier,color){
+				
+				var r=strokewidth, sw = strokewidth, scircle1,ccnt=0,sgroup;
+				
+				sgroup = document.createElementNS(NS,'g');
+				sgroup.setAttribute('id',id);
+				sgroup.setAttribute('fill', 'none');
+				sgroup.setAttribute('stroke', color);
+				sgroup.setAttribute('transform','translate('+x+','+y+')');
+				
+				while(r*r<(maxx*maxx+maxy*maxy)){
+					scircle1 = document.createElementNS(NS,'circle');
+					scircle1.setAttribute('id',id+'c'+ccnt);
+					scircle1.setAttribute('stroke-width', sw);	
+					scircle1.setAttribute('r', r);
+					sgroup.appendChild(scircle1);
+					sw = sw * strokewidthmultiplier;
+					r += sw*2;
+					ccnt++;
+				}
+				
+				mysvg.appendChild(sgroup);
+			}
+			
+			function movecirclegroup(id,x,y){
+				var sgroup = document.getElementById(id);
+				sgroup.setAttribute('transform','translate('+x+','+y+')');
+			}
+			
+		</script>
+	</head>
+	
+	<body id='mainbody' onload='onload_init()'>
+		<noscript>Please enable JavaScript!</noscript>
+	</body>
+	
+</html>
