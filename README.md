@@ -87,6 +87,13 @@ The following 677 bytes will render a [Sierpinski carpet](https://en.wikipedia.o
 
 There's a somewhat commented version as well.
 
+### X3D Menger Sponge and 3D Vicsek fractal
+
+![Menger Sponge and 3D Vicsek fractal](https://github.com/jankovicsandras/misc/blob/master/x3d_menger_vicsek.png)
+
+[Wikipedia article on X3D](https://en.wikipedia.org/wiki/X3d)
+[Wikipedia article on Menger Sponge](https://en.wikipedia.org/wiki/Menger_sponge)
+[Wikipedia article on Vicsek fractal](https://en.wikipedia.org/wiki/Vicsek_fractal)
 
 ### License
 #### The Unlicense / PUBLIC DOMAIN

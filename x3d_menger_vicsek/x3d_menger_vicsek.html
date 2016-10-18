@@ -1,0 +1,136 @@
+<!-- 
+
+Menger sponge and 3D Vicsek fractal with JavaScript and X3D
+
+by András Jankovics, 2016
+
+https://en.wikipedia.org/wiki/X3D
+https://en.wikipedia.org/wiki/Menger_sponge
+https://en.wikipedia.org/wiki/Vicsek_fractal
+
+-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+	
+		<title>Menger sponge and 3D Vicsek fractal with JavaScript and X3D</title>
+		
+		<script>
+		
+			// csscale: default cube scale 
+			var csscale = 2;
+			
+			// Rule for 3D Vicsek fractal 
+			var vicsekiters = [
+				[// Iter 0
+					[ 0, 0, -1], [ 0, 0, 1], [ 0,-1, 0], [ 0, 1, 0], [-1, 0, 0], [ 1, 0, 0], [ 0, 0, 0]
+				]// End of Iter 0
+			];
+			
+			// Rule for Menger sponge
+			var mengeriters = [
+				[// Iter 0
+					[-1,-1,-1], [-1,-1, 0], [-1,-1, 1],  [ 1,-1,-1], [ 1,-1, 0], [ 1,-1, 1],  [ 0,-1,-1], [ 0,-1, 1],
+					[-1, 1,-1], [-1, 1, 0], [-1, 1, 1],  [ 1, 1,-1], [ 1, 1, 0], [ 1, 1, 1],  [ 0, 1,-1], [ 0, 1, 1],
+					[-1, 0,-1], [-1, 0, 1], [ 1, 0,-1], [ 1, 0, 1]
+				]// End of Iter 0
+			];
+
+			// Program entry point
+			function onload_init(){
+				
+				// Getting cubes
+				var cubeset1 = getcubes( mengeriters, 2 ); 
+				var cubeset2 = getcubes( vicsekiters, 3 );
+				
+				// Render
+				getx3dstr( 'mengerspongescene',  cubeset1, '0 0.7 0.4' );
+				getx3dstr( 'vicsekfractalscene', cubeset2, '0.2 0 0.8' );
+			}
+
+			// Getting X3D cube string
+			function getcubestr(cube,color){
+				return '<transform translation="'+cube.x+' '+cube.y+' '+cube.z+'"><shape><appearance><material diffuseColor="'+color+'"/></appearance><box /></shape></transform>';
+			}
+	
+			// Filling the X3D scene with cubes 
+			function getx3dstr(id,cubes,color){
+				var contdiv = document.getElementById(id);
+				if(!contdiv){alert('X3D Scene '+id+' not found!');return;}
+				var str='';
+				for(var i=0; i<cubes.length; i++){ str += getcubestr(cubes[i],color); }
+				contdiv.innerHTML += str;
+			}
+	
+			// Iterating and generating cubes
+			function getcubes(iters,iternum){
+				var cs = [];
+				
+				// Iterating
+				for(var i=1; i<iternum; i++){
+					iters[i] = [];
+					for(var j=0; j<iters[i-1].length; j++){
+						for(var k=0; k<iters[0].length; k++){
+							iters[i].push([
+								iters[i-1][j][0] * 3 + iters[0][k][0],
+								iters[i-1][j][1] * 3 + iters[0][k][1],
+								iters[i-1][j][2] * 3 + iters[0][k][2]
+							]);
+						}
+					}
+				}
+				
+				// Coords to cube objects
+				for(var i=0; i<iters[iternum-1].length; i++){
+					cs.push({ 
+						x:iters[iternum-1][i][0] * csscale,
+						y:iters[iternum-1][i][1] * csscale,
+						z:iters[iternum-1][i][2] * csscale
+					});
+				}
+				
+				return cs;
+			}// End of generatecubes()
+		
+		</script>
+		
+		<script src="http://x3dom.org/download/x3dom.js"></script>
+		
+	</head>
+	
+	<body id="mainbody" onload="onload_init()" style="background-color:rgb(32,32,32);color:rgb(212,212,212);font-family:monospace;">
+
+		<noscript>Please enable JavaScript!</noscript>
+
+		<div id="x3dcontainer" style="width:800px;margin: 0 auto;" >
+		
+			<div style="display:inline;float:left;background-color:rgb(0,0,0);">
+			
+				<!-- Menger Sponge -->
+				<x3d width="400px" height="400px" showStat="true" id="mengersponge">
+					<scene id="mengerspongescene">
+						<Viewpoint id="front" position="0 0 48" orientation="0 0 0" description="camera"></Viewpoint>
+					</scene>
+				</x3d>
+				<!-- ------------- -->
+				
+			</div>
+			
+			<div style="display:inline;float:left;background-color:rgb(0,0,0);">
+			
+				<!-- 3D Vicsek fractal -->
+				<x3d width="400px" height="400px" showStat="true" id="vicsekfractal">
+					<scene id="vicsekfractalscene">
+						<Viewpoint id="front" position="0 0 96" orientation="0 0 0" description="camera"></Viewpoint>
+					</scene>
+				</x3d>
+				<!-- ------------- -->
+				
+			</div>
+			
+		</div>
+	
+	</body>
+	
+</html>
