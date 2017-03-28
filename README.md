@@ -20,7 +20,7 @@ When these files are served from a server (not just opened as local files), they
 
 ![Screenshot](https://github.com/jankovicsandras/misc/blob/master/browser_crashing_html_redirect.png)
 
-####1.html
+#### 1.html
 
 ```html
 <!DOCTYPE html>
@@ -33,7 +33,7 @@ When these files are served from a server (not just opened as local files), they
 </html>
 ```
 
-####2.html
+#### 2.html
 
 ```html
 <!DOCTYPE html>
@@ -46,7 +46,7 @@ When these files are served from a server (not just opened as local files), they
 </html>
 ```
 
-####3.html
+#### 3.html
 
 ```html
 <!DOCTYPE html>
